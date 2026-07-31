@@ -1,3 +1,5 @@
+import { pinchTransform } from "./gestures.js";
+
 const canvas = document.querySelector("#coverCanvas");
 const ctx = canvas.getContext("2d");
 const exportCanvas = document.createElement("canvas");
@@ -10,6 +12,8 @@ let project;
 let backgroundImage = new Image();
 let selectedId = "already";
 let dragState = null;
+let pinchState = null;
+const activePointers = new Map();
 let boundsById = new Map();
 
 const BACKGROUND_ID = "background";
@@ -252,7 +256,7 @@ function renderBackgroundInspector() {
   const layer = backgroundLayer();
   document.querySelector("#inspectorTitle").textContent = layer.name;
   inspector.innerHTML = `
-    <div class="background-help">Drag the image on the canvas, then zoom to choose the crop.</div>
+    <div class="background-help">Drag with one finger to position. Pinch with two fingers to zoom and crop.</div>
     <div class="control"><label>Zoom <span id="backgroundZoomValue">${Math.round(layer.scale * 100)}%</span></label><input data-background-key="scale" type="range" min="1" max="4" step=".01" value="${layer.scale}"></div>
     <div class="control-row">
       <div class="control"><label>Center X</label><input data-background-key="x" type="number" step="1" value="${Math.round(layer.x)}"></div>
@@ -355,10 +359,49 @@ document.querySelector("#aspectRatio").onchange = event => {
   renderAll();
 };
 
-canvas.addEventListener("pointerdown", event => {
+function canvasPoint(event) {
   const rect = canvas.getBoundingClientRect();
-  const x = (event.clientX - rect.left) * project.canvas.width / rect.width;
-  const y = (event.clientY - rect.top) * project.canvas.height / rect.height;
+  return {
+    x: (event.clientX - rect.left) * project.canvas.width / rect.width,
+    y: (event.clientY - rect.top) * project.canvas.height / rect.height,
+  };
+}
+
+function pinchMetrics() {
+  const [first, second] = [...activePointers.values()];
+  const dx = second.x - first.x;
+  const dy = second.y - first.y;
+  return {
+    distance: Math.hypot(dx, dy),
+    x: (first.x + second.x) / 2,
+    y: (first.y + second.y) / 2,
+  };
+}
+
+canvas.addEventListener("pointerdown", event => {
+  event.preventDefault();
+  const { x, y } = canvasPoint(event);
+  activePointers.set(event.pointerId, { x, y });
+  canvas.setPointerCapture(event.pointerId);
+
+  if (activePointers.size === 2) {
+    const gesture = pinchMetrics();
+    const background = backgroundLayer();
+    selectedId = BACKGROUND_ID;
+    dragState = null;
+    pinchState = {
+      distance: Math.max(1, gesture.distance),
+      x: gesture.x,
+      y: gesture.y,
+      scale: background.scale,
+      layerX: background.x,
+      layerY: background.y,
+    };
+    canvas.classList.add("dragging");
+    renderAll();
+    return;
+  }
+
   const hit = [...project.layers].reverse().find(layer => { const b = boundsById.get(layer.id); return b && x >= b.left && x <= b.right && y >= b.top && y <= b.bottom; });
   if (hit) {
     selectedId = hit.id;
@@ -368,19 +411,55 @@ canvas.addEventListener("pointerdown", event => {
     selectedId = BACKGROUND_ID;
     dragState = { type: "background", x, y, layerX: background.x, layerY: background.y };
   }
-  canvas.setPointerCapture(event.pointerId); canvas.classList.add("dragging"); renderAll();
+  canvas.classList.add("dragging"); renderAll();
 });
 canvas.addEventListener("pointermove", event => {
+  if (!activePointers.has(event.pointerId)) return;
+  event.preventDefault();
+  activePointers.set(event.pointerId, canvasPoint(event));
+
+  if (pinchState && activePointers.size >= 2) {
+    const gesture = pinchMetrics();
+    const background = backgroundLayer();
+    const transformed = pinchTransform({
+      startScale: pinchState.scale,
+      startDistance: pinchState.distance,
+      startMidpoint: { x: pinchState.x, y: pinchState.y },
+      startCenter: { x: pinchState.layerX, y: pinchState.layerY },
+      currentDistance: gesture.distance,
+      currentMidpoint: { x: gesture.x, y: gesture.y },
+    });
+    background.scale = transformed.scale;
+    background.x = transformed.x;
+    background.y = transformed.y;
+    renderAll();
+    return;
+  }
+
   if (!dragState) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = (event.clientX - rect.left) * project.canvas.width / rect.width;
-  const y = (event.clientY - rect.top) * project.canvas.height / rect.height;
+  const { x, y } = activePointers.get(event.pointerId);
   const layer = dragState.type === "background" ? backgroundLayer() : selectedLayer();
   layer.x = Math.round(dragState.layerX + x - dragState.x);
   layer.y = Math.round(dragState.layerY + y - dragState.y);
   renderAll();
 });
-canvas.addEventListener("pointerup", () => { dragState = null; canvas.classList.remove("dragging"); });
+function endPointer(event) {
+  activePointers.delete(event.pointerId);
+  if (pinchState) {
+    pinchState = null;
+    if (activePointers.size === 1) {
+      const remaining = [...activePointers.values()][0];
+      const background = backgroundLayer();
+      dragState = { type: "background", x: remaining.x, y: remaining.y, layerX: background.x, layerY: background.y };
+      return;
+    }
+  }
+  dragState = null;
+  if (!activePointers.size) canvas.classList.remove("dragging");
+}
+
+canvas.addEventListener("pointerup", endPointer);
+canvas.addEventListener("pointercancel", endPointer);
 window.addEventListener("keydown", event => {
   if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key) || ["INPUT", "SELECT"].includes(document.activeElement.tagName)) return;
   event.preventDefault(); const amount = event.shiftKey ? 10 : 1; const layer = selectedId === BACKGROUND_ID ? backgroundLayer() : selectedLayer();
