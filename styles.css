@@ -1,5 +1,10 @@
 @font-face { font-family: Anton; src: url("fonts/Anton-Regular.ttf") format("truetype"); }
 @font-face { font-family: Montserrat; src: url("fonts/Montserrat-Variable.ttf") format("truetype"); font-weight: 100 900; }
+@font-face { font-family: "Bebas Neue"; src: url("fonts/BebasNeue-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Archivo Black"; src: url("fonts/ArchivoBlack-Regular.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: Oswald; src: url("fonts/Oswald-Variable.ttf") format("truetype"); font-weight: 200 700; font-display: swap; }
+@font-face { font-family: "League Spartan"; src: url("fonts/LeagueSpartan-Variable.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Space Grotesk"; src: url("fonts/SpaceGrotesk-Variable.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
 
 :root {
   color-scheme: dark;
@@ -32,7 +37,7 @@ h2 { font-size: 17px; }
 
 .workspace { height: calc(100vh - 76px); min-height: 640px; display: grid; grid-template-columns: 260px minmax(420px, 1fr) 310px; }
 .panel { background: var(--panel); overflow: auto; }
-.layers-panel { border-right: 1px solid var(--line); }
+.layers-panel { display: flex; flex-direction: column; border-right: 1px solid var(--line); }
 .inspector-panel { border-left: 1px solid var(--line); }
 .panel-heading { padding: 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
 .layer-list { padding: 10px; display: grid; gap: 7px; }
@@ -46,6 +51,9 @@ h2 { font-size: 17px; }
 .grid-controls { margin: 18px; padding: 14px; border: 1px solid var(--line); border-radius: 9px; display: grid; gap: 10px; }
 .section-title { margin-bottom: 5px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .grid-controls label { display: flex; gap: 8px; align-items: center; }
+.sidebar-footer { margin-top: auto; padding: 14px 18px; display: flex; gap: 14px; border-top: 1px solid var(--line); font-size: 11px; font-weight: 800; }
+.sidebar-footer a { color: var(--muted); text-decoration: none; }
+.sidebar-footer a:hover { color: var(--accent); }
 
 .stage-wrap { min-width: 0; display: flex; flex-direction: column; background: #07101a; }
 .stage-toolbar { height: 42px; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 11px; }

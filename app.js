@@ -12,6 +12,16 @@ let selectedId = "already";
 let dragState = null;
 let boundsById = new Map();
 
+const FONT_OPTIONS = [
+  { family: "Anton", file: "fonts/Anton-Regular.ttf" },
+  { family: "Bebas Neue", file: "fonts/BebasNeue-Regular.ttf" },
+  { family: "Archivo Black", file: "fonts/ArchivoBlack-Regular.ttf" },
+  { family: "Oswald", file: "fonts/Oswald-Variable.ttf" },
+  { family: "League Spartan", file: "fonts/LeagueSpartan-Variable.ttf" },
+  { family: "Space Grotesk", file: "fonts/SpaceGrotesk-Variable.ttf" },
+  { family: "Montserrat", file: "fonts/Montserrat-Variable.ttf" },
+];
+
 const clone = value => JSON.parse(JSON.stringify(value));
 const selectedLayer = () => project.layers.find(layer => layer.id === selectedId);
 
@@ -124,6 +134,14 @@ function renderAll() {
   localStorage.setItem("cover-grid-project", JSON.stringify(project));
 }
 
+function renderAfterControlInput() {
+  renderCanvas();
+  renderLayerList();
+  renderMeasurements();
+  document.querySelector("#inspectorTitle").textContent = selectedLayer().name;
+  localStorage.setItem("cover-grid-project", JSON.stringify(project));
+}
+
 function renderLayerList() {
   layerList.innerHTML = "";
   [...project.layers].reverse().forEach(layer => {
@@ -142,21 +160,24 @@ function renderInspector() {
   if (!layer) return;
   document.querySelector("#inspectorTitle").textContent = layer.name;
   inspector.innerHTML = `
-    ${input("Layer name", "name", "text")}
-    ${input("Text", "text", "text")}
+    ${input("Layer name / text", "name", "text")}
     <div class="control-row">${input("Font size", "fontSize")}${input("Letter spacing", "letterSpacing")}</div>
     <div class="control-row">${input("Math center X", "x")}${input("Optical offset X", "opticalX")}</div>
     <div class="control-row">${input("Center Y", "y")}${input("Horizontal scale", "scaleX", "number", ".01")}</div>
     <div class="control-row">${input("Weight", "fontWeight", "number", "100")}${input("Color", "color", "color")}</div>
-    <div class="control"><label>Font</label><select data-key="fontFamily"><option value="Anton" ${layer.fontFamily === "Anton" ? "selected" : ""}>Anton</option><option value="Montserrat" ${layer.fontFamily === "Montserrat" ? "selected" : ""}>Montserrat</option></select></div>
+    <div class="control"><label>Font</label><select data-key="fontFamily">${FONT_OPTIONS.map(font => `<option value="${font.family}" ${layer.fontFamily === font.family ? "selected" : ""}>${font.family}</option>`).join("")}</select></div>
     <div class="control"><label>Alignment shortcuts</label><div class="align-buttons"><button data-action="center">Center</button><button data-action="left10">−10</button><button data-action="right10">+10</button></div></div>
     <div class="control-row"><button class="button secondary" data-action="duplicate">Duplicate</button><button class="button secondary danger" data-action="delete">Delete</button></div>`;
   inspector.querySelectorAll("[data-key]").forEach(control => {
-    control.addEventListener("input", () => {
+    control.addEventListener("input", async () => {
       const key = control.dataset.key;
       layer[key] = control.type === "number" ? Number(control.value) : control.value;
-      if (key === "fontFamily") layer.fontFile = key === "Anton" ? "fonts/Anton-Regular.ttf" : "fonts/Montserrat-Variable.ttf";
-      renderAll();
+      if (key === "name") layer.text = control.value;
+      if (key === "fontFamily") {
+        layer.fontFile = FONT_OPTIONS.find(font => font.family === control.value)?.file;
+        await document.fonts.load(fontString(layer));
+      }
+      renderAfterControlInput();
     });
   });
   inspector.querySelectorAll("[data-action]").forEach(button => button.onclick = () => handleAction(button.dataset.action));

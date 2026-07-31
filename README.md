@@ -20,6 +20,9 @@ Then open <http://localhost:4173/>.
 The default preset recreates the Already Here Utopia cover. Layout changes are
 stored in the browser and can also be downloaded as JSON.
 
+The editor bundles seven export-safe typefaces: Anton, Bebas Neue, Archivo
+Black, Oswald, League Spartan, Space Grotesk, and Montserrat.
+
 ## Alignment model
 
 - `x` is the mathematical center of a text layer.
@@ -36,4 +39,5 @@ artwork; future covers should use a clean background from the start.
 
 ## License
 
-MIT
+Application code is MIT licensed. Bundled fonts are distributed under the SIL
+Open Font License; see `fonts/OFL-LICENSE.txt`.
