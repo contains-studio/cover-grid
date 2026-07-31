@@ -45,6 +45,7 @@ h2 { font-size: 17px; }
 .layer-item:hover { background: var(--panel-2); }
 .layer-item.selected { border-color: var(--accent); background: rgba(84,210,255,.08); }
 .layer-type { font: 17px Anton; color: var(--accent-2); }
+.gradient-layer-type { font-size: 10px; color: #f4efe3; letter-spacing: -.02em; }
 .layer-name { font-weight: 800; }
 .layer-meta { display: block; color: var(--muted); font-size: 10px; }
 .visibility { color: var(--muted); }
@@ -80,6 +81,7 @@ h2 { font-size: 17px; }
 .control input[type=color] { height: 38px; padding: 3px; }
 .control input[type=range] { accent-color: var(--accent); }
 .background-help { padding: 10px 11px; border: 1px solid var(--line); border-radius: 7px; background: rgba(84,210,255,.07); color: var(--muted); font-size: 12px; }
+.readonly-value { padding: 9px 10px; border: 1px solid var(--line); border-radius: 7px; background: #091522; color: var(--text); font-size: 11px; line-height: 1.6; }
 .align-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .align-buttons button { padding: 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); cursor: pointer; }
 .danger { color: #ff8996; }

@@ -37,8 +37,10 @@ const FONT_OPTIONS = [
 const clone = value => JSON.parse(JSON.stringify(value));
 const selectedLayer = () => project.layers.find(layer => layer.id === selectedId);
 const backgroundLayer = () => project.backgroundLayer;
+const layerType = layer => layer?.type || "text";
 
 function ensureProjectDefaults() {
+  project.layers.forEach(layer => { layer.type ||= "text"; });
   project.backgroundLayer ||= {
     id: BACKGROUND_ID,
     name: "BACKGROUND",
@@ -55,8 +57,10 @@ function activeAspectRatio() {
 }
 
 async function loadDefault() {
-  const preset = await fetch("presets/already-here-utopia.json").then(r => r.json());
-  const stored = localStorage.getItem("cover-grid-project");
+  const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+  const presetPath = requestedPreset === "episode-art" ? "presets/already-here-episode-art.json?v=20260731-v2" : "presets/already-here-utopia.json";
+  const preset = await fetch(presetPath).then(r => r.json());
+  const stored = requestedPreset ? null : localStorage.getItem("cover-grid-project");
   project = stored ? JSON.parse(stored) : preset;
   ensureProjectDefaults();
   try {
@@ -69,6 +73,9 @@ async function loadDefault() {
   }
   await document.fonts.ready;
   document.querySelector("#aspectRatio").value = activeAspectRatio();
+  document.querySelector("#aspectRatio").disabled = Boolean(project.fixedCanvas);
+  document.querySelector("#addLayer").disabled = Boolean(project.fixedLayout);
+  document.querySelector(".stage-toolbar .hint").textContent = project.fixedLayout ? "Drag or pinch the guest image · Gradient and title are locked" : "Drag text · Arrow keys nudge 1 px · Shift + arrow nudges 10 px";
   renderAll();
 }
 
@@ -112,6 +119,34 @@ function drawSpacedText(drawCtx, layer, includeBounds = true) {
   const bounds = { left: centerX - width / 2, right: centerX + width / 2, top: layer.y - layer.fontSize * .48, bottom: layer.y + layer.fontSize * .48, width, centerX };
   if (includeBounds) boundsById.set(layer.id, bounds);
   return bounds;
+}
+
+function gradientBounds(layer) {
+  const x = Number(layer.x || 0);
+  const y = Number(layer.y || 0);
+  const width = Number(layer.width || project.canvas.width);
+  const height = Number(layer.height || project.canvas.height);
+  return { left: x, right: x + width, top: y, bottom: y + height, width, height, centerX: x + width / 2 };
+}
+
+function drawGradient(drawCtx, layer, includeBounds = true) {
+  if (!layer.visible) return null;
+  const bounds = gradientBounds(layer);
+  const fromY = Number(layer.fromY ?? bounds.top);
+  const toY = Number(layer.toY ?? bounds.bottom);
+  const gradient = drawCtx.createLinearGradient(0, fromY, 0, toY);
+  for (const stop of layer.stops || []) gradient.addColorStop(Number(stop.offset), stop.color);
+  drawCtx.save();
+  drawCtx.fillStyle = gradient;
+  drawCtx.fillRect(bounds.left, bounds.top, bounds.width, bounds.height);
+  drawCtx.restore();
+  if (includeBounds) boundsById.set(layer.id, bounds);
+  return bounds;
+}
+
+function drawLayer(drawCtx, layer, includeBounds = true) {
+  if (layerType(layer) === "gradient") return drawGradient(drawCtx, layer, includeBounds);
+  return drawSpacedText(drawCtx, layer, includeBounds);
 }
 
 function backgroundMetrics() {
@@ -180,7 +215,7 @@ function renderCanvas(drawCtx = ctx, guides = true) {
   drawCtx.clearRect(0, 0, width, height);
   boundsById.clear();
   drawBackground(drawCtx);
-  project.layers.forEach(layer => drawSpacedText(drawCtx, layer, true));
+  project.layers.forEach(layer => drawLayer(drawCtx, layer, true));
   if (guides) { drawGrid(drawCtx); drawBounds(drawCtx); }
   document.querySelector("#zoomLabel").textContent = `Fit · ${width} × ${height}`;
 }
@@ -206,7 +241,9 @@ function renderLayerList() {
   [...project.layers].reverse().forEach(layer => {
     const button = document.createElement("button");
     button.className = `layer-item ${layer.id === selectedId ? "selected" : ""}`;
-    button.innerHTML = `<span class="layer-type">T</span><span><span class="layer-name">${layer.name}</span><span class="layer-meta">${layer.fontFamily} · ${Math.round(layer.fontSize)}px</span></span><span class="visibility">${layer.visible ? "●" : "○"}</span>`;
+    const isGradient = layerType(layer) === "gradient";
+    const meta = isGradient ? "Fixed lower fade" : `${layer.fontFamily} · ${Math.round(layer.fontSize)}px`;
+    button.innerHTML = `<span class="layer-type ${isGradient ? "gradient-layer-type" : ""}">${isGradient ? "GRD" : "T"}</span><span><span class="layer-name">${layer.name}</span><span class="layer-meta">${meta}${layer.locked ? " · Locked" : ""}</span></span><span class="visibility">${layer.locked ? "◆" : (layer.visible ? "●" : "○")}</span>`;
     button.onclick = () => { selectedId = layer.id; renderAll(); };
     layerList.append(button);
   });
@@ -228,8 +265,15 @@ function renderInspector() {
   const layer = selectedLayer();
   if (!layer) return;
   document.querySelector("#inspectorTitle").textContent = layer.name;
+  if (layerType(layer) === "gradient") {
+    const stops = (layer.stops || []).map(stop => `${Math.round(stop.offset * 100)}% · ${stop.color}`).join("<br>");
+    inspector.innerHTML = `<div class="background-help"><strong>Canonical fixed layer.</strong> This lower fade is shared by every Already Here episode and is controlled by the episode-art preset JSON.</div><div class="control"><label>Bounds</label><div class="readonly-value">${layer.width} × ${layer.height} at ${layer.x}, ${layer.y}</div></div><div class="control"><label>Gradient stops</label><div class="readonly-value">${stops}</div></div>`;
+    return;
+  }
+  const locked = layer.locked ? "disabled" : "";
   inspector.innerHTML = `
-    ${input("Layer name / text", "name", "text")}
+    ${layer.locked ? '<div class="background-help"><strong>Canonical fixed layer.</strong> Typography is locked to the approved Sam episode geometry.</div>' : ""}
+    ${input("Layer name / text", "name", "text").replace("<input ", `<input ${locked} `)}
     <div class="control-row">${input("Font size", "fontSize")}${input("Letter spacing", "letterSpacing")}</div>
     <div class="control-row">${input("Math center X", "x")}${input("Optical offset X", "opticalX")}</div>
     <div class="control-row">${input("Center Y", "y")}${input("Horizontal scale", "scaleX", "number", ".01")}</div>
@@ -237,6 +281,7 @@ function renderInspector() {
     <div class="control"><label>Font</label><select data-key="fontFamily">${FONT_OPTIONS.map(font => `<option value="${font.family}" ${layer.fontFamily === font.family ? "selected" : ""}>${font.family}</option>`).join("")}</select></div>
     <div class="control"><label>Alignment shortcuts</label><div class="align-buttons"><button data-action="center">Center</button><button data-action="left10">−10</button><button data-action="right10">+10</button></div></div>
     <div class="control-row"><button class="button secondary" data-action="duplicate">Duplicate</button><button class="button secondary danger" data-action="delete">Delete</button></div>`;
+  if (layer.locked) inspector.querySelectorAll("input, select, button").forEach(control => { control.disabled = true; });
   inspector.querySelectorAll("[data-key]").forEach(control => {
     control.addEventListener("input", async () => {
       const key = control.dataset.key;
@@ -286,6 +331,7 @@ function handleBackgroundAction(action) {
 
 function handleAction(action) {
   const layer = selectedLayer();
+  if (!layer || layer.locked || layerType(layer) !== "text") return;
   if (action === "center") { layer.x = project.canvas.width / 2; layer.opticalX = 0; }
   if (action === "left10") layer.opticalX -= 10;
   if (action === "right10") layer.opticalX += 10;
@@ -308,6 +354,10 @@ function renderMeasurements() {
   const layer = selectedLayer();
   const b = boundsById.get(layer.id);
   if (!b) return;
+  if (layerType(layer) === "gradient") {
+    measurements.innerHTML = `<dt>Layer type</dt><dd>Linear gradient</dd><dt>Bounds</dt><dd>${Math.round(b.width)} × ${Math.round(b.height)}</dd><dt>Top</dt><dd>${Math.round(b.top)} px</dd><dt>Bottom</dt><dd>${Math.round(b.bottom)} px</dd>`;
+    return;
+  }
   const leftMargin = b.left;
   const rightMargin = project.canvas.width - b.right;
   measurements.innerHTML = `
@@ -332,7 +382,7 @@ function exportImage(type) {
 document.querySelector("#exportPng").onclick = () => exportImage("image/png");
 document.querySelector("#exportJpg").onclick = () => exportImage("image/jpeg");
 document.querySelector("#downloadProject").onclick = () => downloadBlob(new Blob([JSON.stringify(project, null, 2)], { type: "application/json" }), "already-here-cover-layout.json");
-document.querySelector("#projectFile").onchange = async event => { project = JSON.parse(await event.target.files[0].text()); ensureProjectDefaults(); selectedId = project.layers[0].id; await loadBackground(project.background); document.querySelector("#aspectRatio").value = activeAspectRatio(); renderAll(); };
+document.querySelector("#projectFile").onchange = async event => { project = JSON.parse(await event.target.files[0].text()); ensureProjectDefaults(); selectedId = project.layers[0].id; await loadBackground(project.background); document.querySelector("#aspectRatio").value = activeAspectRatio(); document.querySelector("#aspectRatio").disabled = Boolean(project.fixedCanvas); document.querySelector("#addLayer").disabled = Boolean(project.fixedLayout); document.querySelector(".stage-toolbar .hint").textContent = project.fixedLayout ? "Drag or pinch the guest image · Gradient and title are locked" : "Drag text · Arrow keys nudge 1 px · Shift + arrow nudges 10 px"; renderAll(); };
 document.querySelector("#backgroundFile").onchange = async event => {
   project.background = URL.createObjectURL(event.target.files[0]);
   await loadBackground(project.background);
@@ -341,9 +391,10 @@ document.querySelector("#backgroundFile").onchange = async event => {
   selectedId = BACKGROUND_ID;
   renderAll();
 };
-document.querySelector("#addLayer").onclick = () => { const layer = { id: `text-${Date.now()}`, name: "NEW TEXT", text: "NEW TEXT", fontFamily: "Anton", fontFile: "fonts/Anton-Regular.ttf", fontSize: 300, fontWeight: 400, letterSpacing: 0, scaleX: 1, x: 1500, opticalX: 0, y: 1500, color: "#123958", visible: true }; project.layers.push(layer); selectedId = layer.id; renderAll(); };
+document.querySelector("#addLayer").onclick = () => { if (project.fixedLayout) return; const layer = { id: `text-${Date.now()}`, type: "text", name: "NEW TEXT", text: "NEW TEXT", fontFamily: "Anton", fontFile: "fonts/Anton-Regular.ttf", fontSize: 300, fontWeight: 400, letterSpacing: 0, scaleX: 1, x: 1500, opticalX: 0, y: 1500, color: "#123958", visible: true, locked: false }; project.layers.push(layer); selectedId = layer.id; renderAll(); };
 ["showGrid", "showColumns", "showSafe", "showBounds"].forEach(id => document.querySelector(`#${id}`).onchange = event => { if (id === "showGrid") project.grid.visible = event.target.checked; renderAll(); });
 document.querySelector("#aspectRatio").onchange = event => {
+  if (project.fixedCanvas) return;
   const next = ASPECT_PRESETS[event.target.value];
   const old = { ...project.canvas };
   const scaleX = next.width / old.width;
@@ -402,7 +453,7 @@ canvas.addEventListener("pointerdown", event => {
     return;
   }
 
-  const hit = [...project.layers].reverse().find(layer => { const b = boundsById.get(layer.id); return b && x >= b.left && x <= b.right && y >= b.top && y <= b.bottom; });
+  const hit = [...project.layers].reverse().find(layer => { const b = boundsById.get(layer.id); return !layer.locked && layerType(layer) === "text" && b && x >= b.left && x <= b.right && y >= b.top && y <= b.bottom; });
   if (hit) {
     selectedId = hit.id;
     dragState = { type: "text", x, y, layerX: hit.x, layerY: hit.y };
@@ -463,6 +514,7 @@ canvas.addEventListener("pointercancel", endPointer);
 window.addEventListener("keydown", event => {
   if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key) || ["INPUT", "SELECT"].includes(document.activeElement.tagName)) return;
   event.preventDefault(); const amount = event.shiftKey ? 10 : 1; const layer = selectedId === BACKGROUND_ID ? backgroundLayer() : selectedLayer();
+  if (!layer || (selectedId !== BACKGROUND_ID && (layer.locked || layerType(layer) !== "text"))) return;
   if (event.key === "ArrowLeft") selectedId === BACKGROUND_ID ? layer.x -= amount : layer.opticalX -= amount;
   if (event.key === "ArrowRight") selectedId === BACKGROUND_ID ? layer.x += amount : layer.opticalX += amount;
   if (event.key === "ArrowUp") layer.y -= amount;
