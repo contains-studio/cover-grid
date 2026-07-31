@@ -139,8 +139,13 @@ h2 { font-size: 17px; }
     flex-direction: column;
   }
   .stage-wrap { order: 1; min-height: 0; }
-  .layers-panel { order: 2; }
+  .layers-panel { display: contents; }
+  .layers-panel > .panel-heading,
+  .layers-panel > .layer-list,
+  .layers-panel > .grid-controls { order: 2; background: var(--panel); }
+  .layers-panel > .panel-heading { border-top: 1px solid var(--line); }
   .inspector-panel { order: 3; }
+  .sidebar-bottom { order: 4; width: 100%; margin-top: 0; background: var(--panel); }
   .panel { overflow: visible; }
   .layers-panel, .inspector-panel { border: 0; border-top: 1px solid var(--line); }
 
