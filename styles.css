@@ -28,6 +28,12 @@ h1, h2, p { margin: 0; }
 h1 { font: 30px/1 Anton, sans-serif; letter-spacing: .02em; }
 h2 { font-size: 17px; }
 .eyebrow { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.brand-block { display: grid; grid-template-columns: auto auto; column-gap: 18px; align-items: end; }
+.brand-block .eyebrow { grid-column: 1 / -1; }
+.preset-switch { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #07101a; }
+.preset-switch a { padding: 6px 10px; border-radius: 5px; color: var(--muted); font-size: 11px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+.preset-switch a:hover { color: var(--text); }
+.preset-switch a.active { background: var(--accent); color: #041019; }
 .topbar-actions { display: flex; gap: 8px; align-items: center; }
 .button, .icon-button { border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); cursor: pointer; }
 .button { padding: 9px 13px; }
@@ -106,6 +112,8 @@ h2 { font-size: 17px; }
     flex-direction: column;
   }
   .topbar h1 { font-size: 34px; }
+  .brand-block { width: 100%; grid-template-columns: 1fr auto; }
+  .preset-switch a { min-height: 38px; display: flex; align-items: center; padding-inline: 12px; }
   .topbar-actions {
     width: 100%;
     display: grid;

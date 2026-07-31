@@ -19,13 +19,17 @@
     <meta name="twitter:description" content="Design and export podcast cover art with the Already Here Cover Grid." />
     <meta name="twitter:image" content="https://alreadyhere.show/tools/layout/assets/already-here-tools-preview-v4.jpg" />
     <title>Already Here Tools — Cover Grid</title>
-    <link rel="stylesheet" href="styles.css?v=20260731-episode-layers" />
+    <link rel="stylesheet" href="styles.css?v=20260731-preset-switcher" />
   </head>
   <body>
     <header class="topbar">
-      <div>
+      <div class="brand-block">
         <p class="eyebrow">Already Here studio tool</p>
         <h1>Cover Grid</h1>
+        <nav class="preset-switch" aria-label="Artwork template">
+          <a href="./" data-preset="album-art">Album art</a>
+          <a href="?preset=episode-art&amp;v=2" data-preset="episode-art">Episode art</a>
+        </nav>
       </div>
       <div class="topbar-actions">
         <label class="button secondary">Load background<input id="backgroundFile" type="file" accept="image/*" hidden /></label>
@@ -98,6 +102,6 @@
       </aside>
     </main>
 
-    <script type="module" src="app.js?v=20260731-preset-storage"></script>
+    <script type="module" src="app.js?v=20260731-preset-switcher-v2"></script>
   </body>
 </html>

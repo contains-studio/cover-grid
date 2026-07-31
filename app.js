@@ -57,13 +57,29 @@ function activeAspectRatio() {
   return Object.entries(ASPECT_PRESETS).find(([, size]) => size.width === project.canvas.width && size.height === project.canvas.height)?.[0] || "1:1";
 }
 
+function matchesActivePreset(candidate) {
+  if (!candidate?.layers) return false;
+  const ids = new Set(candidate.layers.map(layer => layer.id));
+  const hasGradient = candidate.layers.some(layer => layerType(layer) === "gradient");
+  if (activePreset === "episode-art") return Boolean(candidate.fixedCanvas && candidate.fixedLayout && hasGradient && ids.has("already") && ids.has("here"));
+  return !candidate.fixedCanvas && !candidate.fixedLayout && !hasGradient && ids.has("already") && ids.has("here") && ids.has("host");
+}
+
 async function loadDefault() {
   const requestedPreset = new URLSearchParams(window.location.search).get("preset");
   activePreset = requestedPreset === "episode-art" ? "episode-art" : "album-art";
+  document.querySelectorAll("[data-preset]").forEach(link => {
+    const selected = link.dataset.preset === activePreset;
+    link.classList.toggle("active", selected);
+    if (selected) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
   const presetPath = requestedPreset === "episode-art" ? "presets/already-here-episode-art.json?v=20260731-v2" : "presets/already-here-utopia.json";
   const preset = await fetch(presetPath).then(r => r.json());
   const stored = localStorage.getItem(`cover-grid-project:${activePreset}`);
-  project = stored ? JSON.parse(stored) : preset;
+  let savedProject = null;
+  try { savedProject = stored ? JSON.parse(stored) : null; } catch { savedProject = null; }
+  project = matchesActivePreset(savedProject) ? savedProject : preset;
   ensureProjectDefaults();
   try {
     await loadBackground(project.background);
