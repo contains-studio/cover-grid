@@ -15,6 +15,7 @@ let dragState = null;
 let pinchState = null;
 const activePointers = new Map();
 let boundsById = new Map();
+let activePreset = "album-art";
 
 const BACKGROUND_ID = "background";
 const ASPECT_PRESETS = {
@@ -58,9 +59,10 @@ function activeAspectRatio() {
 
 async function loadDefault() {
   const requestedPreset = new URLSearchParams(window.location.search).get("preset");
+  activePreset = requestedPreset === "episode-art" ? "episode-art" : "album-art";
   const presetPath = requestedPreset === "episode-art" ? "presets/already-here-episode-art.json?v=20260731-v2" : "presets/already-here-utopia.json";
   const preset = await fetch(presetPath).then(r => r.json());
-  const stored = requestedPreset ? null : localStorage.getItem("cover-grid-project");
+  const stored = localStorage.getItem(`cover-grid-project:${activePreset}`);
   project = stored ? JSON.parse(stored) : preset;
   ensureProjectDefaults();
   try {
@@ -225,7 +227,7 @@ function renderAll() {
   renderLayerList();
   renderInspector();
   renderMeasurements();
-  localStorage.setItem("cover-grid-project", JSON.stringify(project));
+  localStorage.setItem(`cover-grid-project:${activePreset}`, JSON.stringify(project));
 }
 
 function renderAfterControlInput() {
@@ -233,7 +235,7 @@ function renderAfterControlInput() {
   renderLayerList();
   renderMeasurements();
   document.querySelector("#inspectorTitle").textContent = selectedId === BACKGROUND_ID ? backgroundLayer().name : selectedLayer().name;
-  localStorage.setItem("cover-grid-project", JSON.stringify(project));
+  localStorage.setItem(`cover-grid-project:${activePreset}`, JSON.stringify(project));
 }
 
 function renderLayerList() {
