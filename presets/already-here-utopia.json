@@ -1,0 +1,56 @@
+{
+  "name": "Already Here — Utopia",
+  "canvas": { "width": 3000, "height": 3000 },
+  "background": "presets/utopia-background-clean.png",
+  "grid": { "visible": true, "columns": 12, "safeMargin": 240, "minorStep": 100 },
+  "layers": [
+    {
+      "id": "already",
+      "name": "ALREADY",
+      "text": "ALREADY",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 510,
+      "fontWeight": 400,
+      "letterSpacing": 3,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": -80,
+      "y": 1070,
+      "color": "#123958",
+      "visible": true
+    },
+    {
+      "id": "here",
+      "name": "HERE",
+      "text": "HERE",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 550,
+      "fontWeight": 400,
+      "letterSpacing": 5,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": 0,
+      "y": 1640,
+      "color": "#123958",
+      "visible": true
+    },
+    {
+      "id": "host",
+      "name": "HOST LINE",
+      "text": "WITH MICHAEL S GALPERT",
+      "fontFamily": "Montserrat",
+      "fontFile": "fonts/Montserrat-Variable.ttf",
+      "fontSize": 78,
+      "fontWeight": 700,
+      "letterSpacing": 12,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": 0,
+      "y": 2005,
+      "color": "#123958",
+      "visible": true
+    }
+  ]
+}

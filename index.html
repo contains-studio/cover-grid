@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cover Grid</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Already Here studio tool</p>
+        <h1>Cover Grid</h1>
+      </div>
+      <div class="topbar-actions">
+        <label class="button secondary">Load background<input id="backgroundFile" type="file" accept="image/*" hidden /></label>
+        <button id="downloadProject" class="button secondary">Save layout JSON</button>
+        <label class="button secondary">Load layout<input id="projectFile" type="file" accept="application/json" hidden /></label>
+        <button id="exportJpg" class="button secondary">Export JPG</button>
+        <button id="exportPng" class="button primary">Export PNG</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel layers-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Document</p><h2>Layers</h2></div>
+          <button id="addLayer" class="icon-button" aria-label="Add text layer">+</button>
+        </div>
+        <div id="layerList" class="layer-list"></div>
+
+        <section class="grid-controls">
+          <div class="section-title">Alignment guides</div>
+          <label><input id="showGrid" type="checkbox" checked /> Show guides</label>
+          <label><input id="showColumns" type="checkbox" checked /> 12-column grid</label>
+          <label><input id="showSafe" type="checkbox" checked /> Podcast safe area</label>
+          <label><input id="showBounds" type="checkbox" checked /> Text bounds</label>
+        </section>
+      </aside>
+
+      <section class="stage-wrap">
+        <div class="stage-toolbar">
+          <span id="zoomLabel">Fit · 3000 × 3000</span>
+          <span class="hint">Drag text · Arrow keys nudge 1 px · Shift + arrow nudges 10 px</span>
+        </div>
+        <div class="stage-shell">
+          <canvas id="coverCanvas" width="3000" height="3000"></canvas>
+        </div>
+      </section>
+
+      <aside class="panel inspector-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Selected layer</p><h2 id="inspectorTitle">ALREADY</h2></div></div>
+        <div id="inspector"></div>
+        <section class="measure-card">
+          <div class="section-title">Measured output</div>
+          <dl id="measurements"></dl>
+        </section>
+      </aside>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
