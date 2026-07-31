@@ -1,0 +1,80 @@
+{
+  "name": "Already Here Tools — Preview Square",
+  "canvas": { "width": 3000, "height": 3000 },
+  "background": "assets/tools-preview-background.png",
+  "backgroundLayer": {
+    "id": "background",
+    "name": "BACKGROUND",
+    "x": 1500,
+    "y": 1500,
+    "scale": 1,
+    "visible": true
+  },
+  "grid": { "visible": true, "columns": 12, "safeMargin": 240, "minorStep": 100 },
+  "layers": [
+    {
+      "id": "already",
+      "name": "ALREADY",
+      "text": "ALREADY",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 510,
+      "fontWeight": 400,
+      "letterSpacing": 3,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": 0,
+      "y": 850,
+      "color": "#f5f7f7",
+      "visible": true
+    },
+    {
+      "id": "here",
+      "name": "HERE",
+      "text": "HERE",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 550,
+      "fontWeight": 400,
+      "letterSpacing": 5,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": 0,
+      "y": 1450,
+      "color": "#f5f7f7",
+      "visible": true
+    },
+    {
+      "id": "tools",
+      "name": "TOOLS",
+      "text": "TOOLS",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 620,
+      "fontWeight": 400,
+      "letterSpacing": 5,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": 0,
+      "y": 2075,
+      "color": "#7fcef3",
+      "visible": true
+    },
+    {
+      "id": "cover-grid",
+      "name": "COVER GRID",
+      "text": "COVER GRID",
+      "fontFamily": "Montserrat",
+      "fontFile": "fonts/Montserrat-Variable.ttf",
+      "fontSize": 105,
+      "fontWeight": 700,
+      "letterSpacing": 18,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": 0,
+      "y": 2550,
+      "color": "#91a4b8",
+      "visible": true
+    }
+  ]
+}
