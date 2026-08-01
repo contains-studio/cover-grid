@@ -20,6 +20,19 @@ Then open <http://localhost:4173/>.
 The default preset recreates the Already Here Utopia cover. Layout changes are
 stored in the browser and can also be downloaded as JSON.
 
+The editor bundles seven export-safe typefaces: Anton, Bebas Neue, Archivo
+Black, Oswald, League Spartan, Space Grotesk, and Montserrat.
+
+## Episode-art preset
+
+Open <http://localhost:4173/?preset=episode-art> for the
+canonical episode stack. It separates the movable guest/Utopia image from a
+fixed lower gradient and the locked `ALREADY` and `HERE` layers. Load a
+text-free, gradient-free guest image, adjust only its crop, and save the layout
+JSON for deterministic rendering. The square canvas, gradient stops, font,
+color, size, spacing, and text positions are intentionally locked to the Sam
+Gaddis reference.
+
 ## Alignment model
 
 - `x` is the mathematical center of a text layer.
@@ -36,4 +49,5 @@ artwork; future covers should use a clean background from the start.
 
 ## License
 
-MIT
+Application code is MIT licensed. Bundled fonts are distributed under the SIL
+Open Font License; see `fonts/OFL-LICENSE.txt`.

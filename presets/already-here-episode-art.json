@@ -1,0 +1,75 @@
+{
+  "name": "Already Here — Episode Art",
+  "version": 2,
+  "fixedCanvas": true,
+  "fixedLayout": true,
+  "canvas": { "width": 3000, "height": 3000 },
+  "background": "presets/utopia-background-clean.png",
+  "backgroundLayer": {
+    "id": "background",
+    "name": "GUEST + UTOPIA",
+    "x": 1500,
+    "y": 1500,
+    "scale": 1,
+    "visible": true
+  },
+  "grid": { "visible": true, "columns": 12, "safeMargin": 240, "minorStep": 100 },
+  "layers": [
+    {
+      "id": "episode-lower-fade",
+      "type": "gradient",
+      "name": "FIXED LOWER FADE",
+      "x": 0,
+      "y": 1320,
+      "width": 3000,
+      "height": 1680,
+      "fromY": 1320,
+      "toY": 3000,
+      "stops": [
+        { "offset": 0, "color": "rgba(248, 247, 241, 0)" },
+        { "offset": 0.28, "color": "rgba(248, 247, 241, 0.12)" },
+        { "offset": 0.55, "color": "rgba(248, 247, 241, 0.48)" },
+        { "offset": 0.78, "color": "rgba(248, 247, 241, 0.78)" },
+        { "offset": 1, "color": "rgba(248, 247, 241, 0.96)" }
+      ],
+      "visible": true,
+      "locked": true
+    },
+    {
+      "id": "already",
+      "type": "text",
+      "name": "ALREADY",
+      "text": "ALREADY",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 510,
+      "fontWeight": 400,
+      "letterSpacing": 3,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": -80,
+      "y": 2125,
+      "color": "#123958",
+      "visible": true,
+      "locked": true
+    },
+    {
+      "id": "here",
+      "type": "text",
+      "name": "HERE",
+      "text": "HERE",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 550,
+      "fontWeight": 400,
+      "letterSpacing": 5,
+      "scaleX": 1,
+      "x": 1500,
+      "opticalX": 0,
+      "y": 2675,
+      "color": "#123958",
+      "visible": true,
+      "locked": true
+    }
+  ]
+}

@@ -2,15 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cover Grid</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#09121d" />
+    <meta name="description" content="Design and export podcast cover art with the Already Here Cover Grid." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Already Here Tools" />
+    <meta property="og:title" content="Already Here Tools — Cover Grid" />
+    <meta property="og:description" content="Design and export podcast cover art with the Already Here Cover Grid." />
+    <meta property="og:url" content="https://alreadyhere.show/tools/layout/" />
+    <meta property="og:image" content="https://alreadyhere.show/tools/layout/assets/already-here-tools-preview-v4.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Already Here Tools Cover Grid preview" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Already Here Tools — Cover Grid" />
+    <meta name="twitter:description" content="Design and export podcast cover art with the Already Here Cover Grid." />
+    <meta name="twitter:image" content="https://alreadyhere.show/tools/layout/assets/already-here-tools-preview-v4.jpg" />
+    <title>Already Here Tools — Cover Grid</title>
+    <link rel="stylesheet" href="styles.css?v=20260731-mobile-footer-last" />
   </head>
   <body>
     <header class="topbar">
-      <div>
+      <div class="brand-block">
         <p class="eyebrow">Already Here studio tool</p>
         <h1>Cover Grid</h1>
+        <nav class="preset-switch" aria-label="Artwork template">
+          <a href="./" data-preset="album-art">Album art</a>
+          <a href="?preset=episode-art&amp;v=2" data-preset="episode-art">Episode art</a>
+        </nav>
       </div>
       <div class="topbar-actions">
         <label class="button secondary">Load background<input id="backgroundFile" type="file" accept="image/*" hidden /></label>
@@ -36,11 +55,36 @@
           <label><input id="showSafe" type="checkbox" checked /> Podcast safe area</label>
           <label><input id="showBounds" type="checkbox" checked /> Text bounds</label>
         </section>
+
+        <div class="sidebar-bottom">
+          <section class="build-receipt" aria-label="Cover Grid build receipt">
+            <p class="section-title">Build receipt</p>
+            <p class="receipt-tokens">50,049,390 tokens</p>
+            <p class="receipt-cost">$40.41 <span>estimated</span></p>
+            <p class="receipt-meta">Created Jul 30, 2026 · 6:01 PM PT</p>
+            <a class="receipt-source" href="https://developers.openai.com/api/docs/models/gpt-5.6-sol" target="_blank" rel="noopener noreferrer">GPT‑5.6 Sol · Medium · Jul 30 rates ↗</a>
+          </section>
+          <nav class="sidebar-footer" aria-label="Cover Grid links">
+            <a href="https://github.com/contains-studio/cover-grid" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            <a href="https://www.youtube.com/@alreadyhereshow" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
+            <a href="https://x.com/alreadyhereshow" target="_blank" rel="noopener noreferrer">X ↗</a>
+            <a href="https://open.spotify.com/show/033YGqcUX3yaF2iNeMbOE8" target="_blank" rel="noopener noreferrer">Spotify ↗</a>
+            <a href="https://podcasts.apple.com/us/podcast/already-here/id6796530206" target="_blank" rel="noopener noreferrer">Apple Podcasts ↗</a>
+          </nav>
+        </div>
       </aside>
 
       <section class="stage-wrap">
         <div class="stage-toolbar">
           <span id="zoomLabel">Fit · 3000 × 3000</span>
+          <label class="aspect-control">Canvas
+            <select id="aspectRatio" aria-label="Canvas aspect ratio">
+              <option value="1:1">Square · 1:1</option>
+              <option value="16:9">Landscape · 16:9</option>
+              <option value="4:5">Portrait · 4:5</option>
+              <option value="9:16">Vertical · 9:16</option>
+            </select>
+          </label>
           <span class="hint">Drag text · Arrow keys nudge 1 px · Shift + arrow nudges 10 px</span>
         </div>
         <div class="stage-shell">
@@ -58,6 +102,6 @@
       </aside>
     </main>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=20260731-preset-switcher-v2"></script>
   </body>
 </html>

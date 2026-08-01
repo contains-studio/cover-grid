@@ -1,0 +1,64 @@
+{
+  "name": "Already Here Tools — Preview Square",
+  "canvas": { "width": 3000, "height": 3000 },
+  "background": "assets/tools-preview-background.png",
+  "backgroundLayer": {
+    "id": "background",
+    "name": "BACKGROUND",
+    "x": 1500,
+    "y": 1500,
+    "scale": 1,
+    "visible": true
+  },
+  "grid": { "visible": true, "columns": 12, "safeMargin": 240, "minorStep": 100 },
+  "layers": [
+    {
+      "id": "free-tools",
+      "name": "FREE TOOLS",
+      "text": "FREE TOOLS",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 330,
+      "fontWeight": 400,
+      "letterSpacing": 4,
+      "scaleX": 1,
+      "x": 1224,
+      "opticalX": 0,
+      "y": 1050,
+      "color": "#f5f7f7",
+      "visible": true
+    },
+    {
+      "id": "from-making",
+      "name": "FROM MAKING",
+      "text": "FROM MAKING",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 330,
+      "fontWeight": 400,
+      "letterSpacing": 4,
+      "scaleX": 1,
+      "x": 1407,
+      "opticalX": 0,
+      "y": 1500,
+      "color": "#f5f7f7",
+      "visible": true
+    },
+    {
+      "id": "the-show",
+      "name": "THE SHOW",
+      "text": "THE SHOW",
+      "fontFamily": "Anton",
+      "fontFile": "fonts/Anton-Regular.ttf",
+      "fontSize": 330,
+      "fontWeight": 400,
+      "letterSpacing": 4,
+      "scaleX": 1,
+      "x": 1144,
+      "opticalX": 0,
+      "y": 1950,
+      "color": "#f5f7f7",
+      "visible": true
+    }
+  ]
+}
